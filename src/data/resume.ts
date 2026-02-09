@@ -23,7 +23,7 @@ export const resumeData = {
         frontend: [
             "Next.js",
             "React.js",
-            "Angular 18",
+            "AngularJS",
             "Angular 15",
             "TypeScript",
             "JavaScript (ES6+)",
@@ -60,8 +60,6 @@ export const resumeData = {
             "Vercel",
             "Jira",
             "Git",
-            "Linux",
-            "Nginx",
         ],
         tools: [
             "Xendit",
@@ -76,7 +74,7 @@ export const resumeData = {
             period: "July 2024 – Present",
             description: "I help clients bring their ideas to life with custom web and system solutions. Check out my work at **[reimondavendano.vercel.app](https://reimondavendano.vercel.app)**.",
             achievements: [
-                "Built and launched web apps with **Next.js**, **React**, and **Angular 18** that helped clients reach more customers.",
+                "Built and launched web apps with **Next.js**, **React**, and **Angular 15** that helped clients reach more customers.",
                 "Set up **Xendit** and **Paymongo** so clients could accept payments easily and securely.",
                 "Created solid backend systems with **Supabase** and **GraphQL** to handle data efficiently.",
                 "Wrote **Cron** jobs and used **Vercel** to automate boring tasks, saving a lot of manual work.",
@@ -101,7 +99,7 @@ export const resumeData = {
                     desc: "Built booking and inventory apps for local shops like salons and cafes. It helped them schedule appointments and keep track of their stock.",
                 },
             ],
-            stack: "Next.js, React, Angular 18, Supabase, GraphQL, Tailwind CSS, Xendit, Mikrotik API, Paymongo, Vercel, Cron, Javascript, Typescript, Redux",
+            stack: "Next.js, React, Angular 15, Supabase, GraphQL, Tailwind CSS, Xendit, Mikrotik API, Paymongo, Vercel, Cron, Javascript, Typescript, Redux",
         },
         {
             role: "Scrum Master",
