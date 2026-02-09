@@ -1,4 +1,21 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@media print {
+  @page {
+    size: legal;
+    margin: 0;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    background: linear-gradient(to right, #0f172a 0%, #0f172a 30%, white 30%, white 100%) !important;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
 
 :root {
   --background: #ffffff;

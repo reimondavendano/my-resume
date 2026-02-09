@@ -1,65 +1,97 @@
-import Image from "next/image";
+'use client';
+
+import Resume from '@/components/Resume';
+import { Printer, FileText } from 'lucide-react';
 
 export default function Home() {
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownloadWord = async () => {
+    try {
+      const { generateDocx } = await import('@/utils/docx-generator');
+      const { saveAs } = await import('file-saver');
+
+      // Fetch the image to embed it
+      let imageBuffer: ArrayBuffer | undefined = undefined;
+      try {
+        // Load image into an HTMLImageElement first to crop it
+        const img = new Image();
+        img.src = '/mon.jpg';
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+
+        // Create canvas for circular cropping
+        const canvas = document.createElement('canvas');
+        const size = Math.min(img.width, img.height);
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        if (ctx) {
+          // Draw circle clip
+          ctx.beginPath();
+          ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+          ctx.clip();
+
+          // Draw image centered
+          // Calculate centering
+          const offsetX = (img.width - size) / 2;
+          const offsetY = (img.height - size) / 2;
+
+          // Draw: source x, source y, source w, source h, dest x, dest y, dest w, dest h
+          // Use a slightly tighter source rect if we want to zoom in (like object-[center_20%])
+          // For now, center crop is safe
+          ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size);
+
+          // Convert to blob/buffer
+          imageBuffer = await new Promise<ArrayBuffer | undefined>((resolve) => {
+            canvas.toBlob(async (blob) => {
+              if (blob) resolve(await blob.arrayBuffer());
+              else resolve(undefined);
+            }, 'image/png');
+          });
+        }
+      } catch (e) {
+        console.error("Failed to load profile image for Word export", e);
+      }
+
+      const blob = await generateDocx(imageBuffer);
+      saveAs(blob, "Reimond_Mark_Avendano_Resume.docx");
+    } catch (error) {
+      console.error("Error generating Word document:", error);
+      alert("Failed to generate Word document. Please try again.");
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-10 px-4 print:bg-white print:p-0 font-sans">
+      <div className="fixed bottom-8 right-8 flex flex-col gap-4 print:hidden z-50 animate-fade-in-up">
+        <button
+          onClick={handlePrint}
+          className="bg-slate-900 text-white p-4 rounded-full shadow-2xl hover:bg-slate-800 hover:scale-110 active:scale-95 transition-all flex items-center justify-center gap-2 group relative ring-4 ring-white/50"
+          title="Print / Save as PDF"
+        >
+          <Printer className="w-6 h-6" />
+          <span className="absolute right-full mr-4 bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">Save as PDF</span>
+        </button>
+
+        <button
+          onClick={handleDownloadWord}
+          className="bg-blue-600 text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all flex items-center justify-center gap-2 group relative ring-4 ring-white/50"
+          title="Download Word"
+        >
+          <FileText className="w-6 h-6" />
+          <span className="absolute right-full mr-4 bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">Download Word</span>
+        </button>
+      </div>
+
+      <Resume />
+
+
+    </main>
   );
 }
